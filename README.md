@@ -22,10 +22,7 @@ WHERE
 * второй запрос, если нужно посчитать процент индексов к размеру всей таблицы:
 ```sql
 SELECT ##второй запрос, если нужно посчитать процент индексов к размеру всей таблицы
-  ROUND(
-    (SUM(stat.INDEX_LENGTH) / SUM(stat.DATA_LENGTH + stat.INDEX_LENGTH)) * 100, 
-    2
-  ) AS percentage 
+  ROUND((SUM(stat.INDEX_LENGTH) / SUM(stat.DATA_LENGTH + stat.INDEX_LENGTH)) * 100, 2) AS percentage 
 FROM 
   information_schema.TABLES stat
 WHERE 
