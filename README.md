@@ -7,7 +7,7 @@
 **решение** 
 
 ```sql
-SELECT ##первый запрос, если нужно посчитать процент индексов только по отношению к данным
+SELECT
   ROUND(
     (SUM(stat.INDEX_LENGTH) / SUM(stat.DATA_LENGTH)) * 100, 
     2
