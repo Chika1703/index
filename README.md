@@ -5,18 +5,34 @@
 Напишите запрос к учебной базе данных, который вернёт процентное отношение общего размера всех индексов к общему размеру всех таблиц.
 
 **решение** 
+немного не понял что именно нужно посчитать поэтому выполнил два запроса, а именно:
+* первый запрос, если нужно посчитать процент индексов только по отношению к данным
+* второй запрос, если нужно посчитать процент индексов к размеру всей таблицы
 
 ```sql
 SELECT
+  ROUND((SUM(stat.INDEX_LENGTH) / SUM(stat.DATA_LENGTH)) * 100, 2) AS percentage 
+FROM 
+  information_schema.TABLES stat
+WHERE 
+  stat.TABLE_SCHEMA = 'sakila';
+```
+
+![image 1](png/1.png)
+
+```sql
+SELECT ##второй запрос, если нужно посчитать процент индексов к размеру всей таблицы
   ROUND(
-    (SUM(stat.INDEX_LENGTH) / SUM(stat.DATA_LENGTH)) * 100, 
+    (SUM(stat.INDEX_LENGTH) / SUM(stat.DATA_LENGTH + stat.INDEX_LENGTH)) * 100, 
     2
   ) AS percentage 
 FROM 
   information_schema.TABLES stat
 WHERE 
   stat.TABLE_SCHEMA = 'sakila';
+
 ```
+![image 2](png/2.png)
 
 ### Задание 2
 
