@@ -45,7 +45,7 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 ### решение
 
 #### узкие места
-
+выполнив ```EXPLAIN ANALYZE``` в неоптимизированном запросе получил результат: (actual time=3389..3389 rows=391 loops=1).
 1. Использование ```,``` для соединения таблиц (старый синтаксис):
 * Этот метод менее эффективен и сложнее для оптимизатора. Лучше использовать ```JOIN```.
 2. Функция ```DATE(p.payment_date)``` в ```WHERE```:
@@ -58,6 +58,7 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 5. ```OVER (PARTITION BY)```:
 * Окно, основанное на двух столбцах ```customer_id``` и ```title```, может требовать временных таблиц для выполнения, особенно если таблицы большие.
 
+![image 3](png/3.png)
 
 #### оптимизация запроса
 1. Создание индексов для ускорения соединений и фильтрации:
@@ -65,7 +66,16 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 3. Удаляем ```DATE()``` в ```WHERE``` и переписываем фильтр через интервал
 4. Удаление ```DISTINCT```
 
-в итоге у нас выходит такой запрос:
+в ходе оптимизации я создал индексы и улучшил запрос:
+```sql
+CREATE INDEX idx_payment_date ON payment (payment_date);
+CREATE INDEX idx_rental_date ON rental (rental_date);
+CREATE INDEX idx_customer_id ON customer (customer_id);
+CREATE INDEX idx_inventory_id ON inventory (inventory_id);
+CREATE INDEX idx_film_title ON film (title);
+CREATE INDEX idx_film_id ON inventory (film_id);
+```
+
 ```sql
 SELECT DISTINCT 
   CONCAT(c.last_name, ' ', c.first_name) AS full_name,
@@ -84,9 +94,9 @@ WHERE
   p.payment_date >= '2005-07-30 00:00:00' 
   AND p.payment_date < '2005-07-31 00:00:00';
 ```
+и выводит результат ```EXPLAIN ANALYZE```: (actual time=9.15..9.19 rows=602 loops=1)
 
-
-
+![image 4](png/4.png)
 
 
 
